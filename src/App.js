@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useLazyQuery, useMutation } from "@apollo/client";
 
-const ALL_PEOPLE = gql`
+export const ALL_PEOPLE = gql`
   query AllPeople {
     people {
       id
@@ -21,10 +21,9 @@ const ADD_PERSON = gql`
 
 export default function App() {
   const [name, setName] = useState('');
-  const {
-    loading,
-    data,
-  } = useQuery(ALL_PEOPLE);
+  const [listPeople, { loading, data }] = useLazyQuery(ALL_PEOPLE);
+
+  React.useEffect(() => listPeople(), [listPeople])
 
   const [addPerson] = useMutation(ADD_PERSON, {
     update: (cache, { data: { addPerson: addPersonData } }) => {
